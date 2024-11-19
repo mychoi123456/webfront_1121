@@ -1,8 +1,30 @@
+import { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 export default function SignInPage() {
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  useEffect(() => {
+    // http://localhost:5173/signin
+    // http://localhost:5173/signin?a=1&b=2
+
+    // 1)
+    searchParams.set('a', '1')
+    searchParams.set('b', '2')
+    setSearchParams(searchParams, { replace: true })
+
+    // 2)
+    setSearchParams(
+      {
+        a: '1',
+        b: '2'
+      },
+      {
+        replace: true
+      }
+    )
+  }, [])
 
   function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()

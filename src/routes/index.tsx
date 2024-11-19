@@ -9,6 +9,8 @@ import Dashboard from './pages/Dashboard'
 import SignIn from './pages/SignIn'
 import { requiresAuth } from './loaders/requiresAuth'
 
+// http://localhost:5173/about
+// http://localhost:5173/#/about
 const router = createBrowserRouter([
   // 라우트 객체(페이지 정보)
   {
