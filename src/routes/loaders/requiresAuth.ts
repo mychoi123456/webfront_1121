@@ -8,8 +8,12 @@ export function requiresAuth({ request }: { request: Request }) {
   const url = new URL(request.url)
   const callbackUrl = url.pathname + url.search
   const token = localStorage.getItem('token')
+  // const user = await 서버에서_사용자_인증(액세스토큰)
   if (token) {
-    return true
+    return {
+      name: 'Heropy',
+      age: 85
+    }
   }
   return redirect(`/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`)
 }

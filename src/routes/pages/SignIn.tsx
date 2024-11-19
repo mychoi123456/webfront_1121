@@ -14,7 +14,7 @@ export default function SignInPage() {
       // 로그인 성공!
       localStorage.setItem('token', '1D234uya_sklsjefklajwn')
       const callbackUrl = searchParams.get('callbackUrl')
-      navigate('/dashboard' || '/')
+      navigate(callbackUrl || '/')
       // http://localhost:5173/signin/http://localhost:5173/dashboard
     }
   }
