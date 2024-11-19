@@ -1,3 +1,15 @@
-import { redirect } from 'react-router-dom'
+import { create } from 'zustand'
 
-redirect('/about')
+export const useMovieStore = create(set => {
+  // 상태 객체
+  return {
+    searchText: '',
+    movies: [],
+    setSearchText: (text: string) => {
+      // searchText = text
+      set({
+        searchText: text
+      })
+    }
+  }
+})
