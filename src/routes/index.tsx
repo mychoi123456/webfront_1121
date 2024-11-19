@@ -4,13 +4,14 @@ import Home from './pages/Home'
 import About from './pages/About'
 import Movies from './pages/Movies'
 import MovieDetails from './pages/MovieDetails'
-
-// Store
+import NotFound from './pages/NotFound'
+import Dashboard from './pages/Dashboard'
+import SignIn from './pages/SignIn'
+import { requiresAuth } from './loaders/requiresAuth'
 
 const router = createBrowserRouter([
   // 라우트 객체(페이지 정보)
   {
-    // path: '',
     element: <DefaultLayout />,
     children: [
       {
@@ -30,8 +31,21 @@ const router = createBrowserRouter([
             element: <MovieDetails />
           }
         ]
+      },
+      {
+        path: '/dashboard',
+        element: <Dashboard />,
+        loader: requiresAuth
+      },
+      {
+        path: '/signin',
+        element: <SignIn />
       }
     ]
+  },
+  {
+    path: '*',
+    element: <NotFound />
   }
 ])
 // http://localhost:5173/

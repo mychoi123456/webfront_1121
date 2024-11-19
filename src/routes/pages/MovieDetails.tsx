@@ -37,18 +37,17 @@ export interface Rating {
 export default function MovieDetailsPage() {
   const { movieId } = useParams()
   const [movie, setMovie] = useState<MovieDetails | null>(null)
-  // const [GETTER, SETTER] = useState(초깃값)
 
   useEffect(() => {
     fetchMovieDetails()
   }, [movieId])
-  // useEffect(실행할함수, 의존성배열)
 
   async function fetchMovieDetails() {
     const res = await fetch(`https://omdbapi.com/?apikey=7035c60c&i=${movieId}`)
     const data = await res.json()
     setMovie(data)
   }
+
   return (
     <Modal>
       <h1>Movie Details Page!</h1>

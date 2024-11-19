@@ -1,20 +1,18 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import styles from './Header.module.css'
 
-// Hook(훅)
-
 const navigations = [
   { to: '/', label: 'Home' },
   { to: '/about', label: 'About' },
-  { to: '/movies', label: 'Movies' }
+  { to: '/movies', label: 'Movies' },
+  { to: '/dashboard', label: 'Dashboard' }
 ]
 
 export default function Header() {
   const navigate = useNavigate()
 
-  function signIn() {
-    // 로그인 처리..
-    navigate(-2)
+  function toSignIn() {
+    navigate('/signin')
   }
 
   return (
@@ -29,7 +27,7 @@ export default function Header() {
           </NavLink>
         )
       })}
-      <button onClick={signIn}>로그인</button>
+      <button onClick={toSignIn}>로그인</button>
     </header>
   )
 }
