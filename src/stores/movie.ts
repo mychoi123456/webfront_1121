@@ -51,12 +51,12 @@ export const useMovieStore = create(
     (set, get) => {
       // 상태 객체
       return {
-        setSearchText: (text: string) => {
+        setSearchText(text: string) {
           set({
             searchText: text
           })
         },
-        fetchMovies: async () => {
+        async fetchMovies() {
           const { searchText } = get()
           // const state = get()
           // const searchText = state.searchText
@@ -68,7 +68,7 @@ export const useMovieStore = create(
             movies: Search
           })
         },
-        fetchMovieDetails: async (movieId: string) => {
+        async fetchMovieDetails(movieId: string) {
           set({
             isLoading: true
           })
