@@ -7,6 +7,7 @@ import MovieDetails from './pages/MovieDetails'
 import NotFound from './pages/NotFound'
 import Dashboard from './pages/Dashboard'
 import SignIn from './pages/SignIn'
+import Delay from './pages/Delay'
 import { requiresAuth } from './loaders/requiresAuth'
 
 // http://localhost:5173/about
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
       {
         path: '/signin',
         element: <SignIn />
+      },
+      {
+        path: '/delay',
+        element: <Delay />
       }
     ]
   },
