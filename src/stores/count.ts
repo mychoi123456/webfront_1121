@@ -1,8 +1,28 @@
-// import { create } from 'zustand'
+import { create } from 'zustand'
+import { combine, persist, subscribeWithSelector } from 'zustand/middleware'
+import { immer } from 'zustand/middleware/immer'
 
-// export const useCountStore = create<타입>((set, get) => ({
-//   상태1,
-//   상태2,
-//   액션1,
-//   액션2
-// }))
+export const useCountStore = create(
+  immer(
+    subscribeWithSelector(
+      persist(
+        combine(
+          {
+            count: 0,
+            double: 0
+          },
+          set => ({
+            increase: () => {
+              set(state => ({
+                count: state.count + 1
+              }))
+            }
+          })
+        ),
+        {
+          name: 'countStore'
+        }
+      )
+    )
+  )
+)
