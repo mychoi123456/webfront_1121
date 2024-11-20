@@ -1,28 +1,55 @@
 import { create } from 'zustand'
-import { combine } from 'zustand/middleware'
+import {
+  combine,
+  subscribeWithSelector,
+  persist,
+  createJSONStorage
+} from 'zustand/middleware'
 
 export const useCountStore = create(
-  combine(
+  persist(
+    subscribeWithSelector(
+      combine(
+        {
+          count: 0,
+          double: 0
+        },
+        set => {
+          function increase() {
+            set(state => ({
+              count: state.count + 1
+            }))
+          }
+          function decrease() {
+            set(state => ({
+              count: state.count - 1
+            }))
+          }
+          return {
+            increase,
+            decrease
+          }
+        }
+      )
+    ),
     {
-      count: 0,
-      double: 0
-    },
-    set => {
-      function increaseDouble() {
-        set(state => ({
-          double: state.count * 2
-        }))
-      }
-      function increase() {
-        set(state => ({
-          count: state.count + 1
-        }))
-        increaseDouble()
-      }
-      return {
-        increase,
-        increaseDouble
-      }
+      name: 'countStore',
+      storage: createJSONStorage(() => sessionStorage)
     }
   )
+)
+
+// localStorage.getItem(이름)
+// localStorage.setItem(이름, 데이터)
+// localStorage.removeItem(이름)
+// localStorage.clear()
+
+// useCountStore.subscribe(선택자, 콜백)
+useCountStore.subscribe(
+  state => state.count,
+  count => {
+    useCountStore.setState({
+      double: count * 2
+    })
+  }
 )
