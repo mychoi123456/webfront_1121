@@ -1,11 +1,11 @@
 import { useMovieStore } from '@/stores/movie'
-// import type { Movie } from '@/stores/movie'
-// import { useMovieStore, type Movie } from '@/stores/movie'
+import { useMovies } from '@/hooks/movie'
 
 export default function SearchBar() {
+  const { refetch } = useMovies()
   const searchText = useMovieStore(state => state.searchText)
   const setSearchText = useMovieStore(state => state.setSearchText)
-  const fetchMovies = useMovieStore(state => state.fetchMovies)
+  // const fetchMovies = useMovieStore(state => state.fetchMovies)
 
   // const movie: Movie = {}
 
@@ -14,9 +14,9 @@ export default function SearchBar() {
       <input
         value={searchText}
         onChange={e => setSearchText(e.target.value)}
-        onKeyDown={e => e.key === 'Enter' && fetchMovies()}
+        onKeyDown={e => e.key === 'Enter' && refetch()}
       />
-      <button onClick={fetchMovies}>검색</button>
+      <button onClick={() => refetch()}>검색</button>
     </>
   )
 }
