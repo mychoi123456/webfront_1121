@@ -11,7 +11,9 @@ export default function MovieList() {
       <ul>
         {movies?.map(movie => (
           <li key={movie.imdbID}>
-            <Link to={`/movies/${movie.imdbID}`}>{movie.Title}</Link>
+            <Link to={`/movies/${movie.imdbID}`}>
+              {movie.Title}({movie.Year})
+            </Link>
           </li>
         ))}
       </ul>

@@ -43,6 +43,7 @@ export interface Rating {
 export const useMovieStore = create(
   combine(
     {
+      inputText: '',
       searchText: '',
       movies: [] as Movie[], // as 타입 단언
       currentMovie: null as null | MovieDetails, // as 타입 단언
@@ -51,6 +52,11 @@ export const useMovieStore = create(
     (set, get) => {
       // 상태 객체
       return {
+        setInputText(text: string) {
+          set({
+            inputText: text
+          })
+        },
         setSearchText(text: string) {
           set({
             searchText: text

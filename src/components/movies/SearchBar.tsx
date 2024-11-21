@@ -1,14 +1,15 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useMovieStore } from '@/stores/movie'
-import { useMovies } from '@/hooks/movie'
 
 export default function SearchBar() {
-  useMovies()
   const searchText = useMovieStore(state => state.searchText)
   const setSearchText = useMovieStore(state => state.setSearchText)
+  const inputText = useMovieStore(state => state.inputText)
+  const setInputText = useMovieStore(state => state.setInputText)
   const queryClient = useQueryClient()
 
   function fetchMovies() {
+    setSearchText(inputText)
     queueMicrotask(() => {
       queryClient.fetchQuery({
         queryKey: ['movies', searchText],
@@ -21,8 +22,8 @@ export default function SearchBar() {
   return (
     <>
       <input
-        value={searchText}
-        onChange={e => setSearchText(e.target.value)}
+        value={inputText}
+        onChange={e => setInputText(e.target.value)}
         onKeyDown={e => e.key === 'Enter' && fetchMovies()}
       />
       <button onClick={() => fetchMovies()}>검색</button>
