@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 
 interface Todo {
   id: string // 할 일 ID
@@ -9,6 +9,12 @@ interface Todo {
   updatedAt: string // 할 일 수정일
 }
 
+const headers = {
+  'Content-Type': 'application/json',
+  apikey: 'KDT8_bcAWVpD8',
+  username: 'KDT8_ParkYoungWoong'
+}
+
 export function useFetchTodos() {
   return useQuery<Todo[]>({
     queryKey: ['todos'],
@@ -17,15 +23,35 @@ export function useFetchTodos() {
         'https://asia-northeast3-heropy-api.cloudfunctions.net/api/todos',
         {
           method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            apikey: 'KDT8_bcAWVpD8',
-            username: 'KDT8_ParkYoungWoong'
-          }
+          headers
+          // body: // xxx
         }
       )
       return await res.json()
     },
     staleTime: 1000 * 60 * 5
+  })
+}
+
+export function useCreateTodo() {
+  return useMutation({
+    mutationFn: async (title: string) => {
+      const res = await fetch(
+        'https://asia-northeast3-heropy-api.cloudfunctions.net/api/todos',
+        {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            title
+          })
+        }
+      )
+      const data = await res.json()
+      console.log(data)
+    },
+    onMutate: () => {},
+    onSuccess: () => {},
+    onError: () => {},
+    onSettled: () => {}
   })
 }
