@@ -5,7 +5,7 @@ import MovieList from '@/components/movies/MovieList'
 export default function MoviesPage() {
   return (
     <>
-      <h1>Movies Page!</h1>
+      <h1>Movies Page?!</h1>
       <SearchBar />
       <MovieList />
       <Outlet />
