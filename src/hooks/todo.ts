@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 interface Todo {
   id: string // 할 일 ID
@@ -34,6 +34,7 @@ export function useFetchTodos() {
 }
 
 export function useCreateTodo() {
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (title: string) => {
       const res = await fetch(
@@ -46,12 +47,39 @@ export function useCreateTodo() {
           })
         }
       )
-      const data = await res.json()
-      console.log(data)
+      return await res.json()
     },
-    onMutate: () => {},
-    onSuccess: () => {},
-    onError: () => {},
+    onMutate: title => {
+      // 낙관적 업데이트
+      const newTodo = {
+        id: Date.now().toString(),
+        title: title,
+        done: false,
+        createdAt: '',
+        updatedAt: '',
+        order: 0
+      }
+      const previousTodos = queryClient.getQueryData<Todo[]>(['todos'])
+      if (previousTodos) {
+        queryClient.setQueryData(['todos'], [newTodo, ...previousTodos])
+      }
+      return previousTodos
+    },
+    onSuccess: data => {
+      const todos = queryClient.getQueryData<Todo[]>(['todos'])
+      if (todos) {
+        // todos.shift()
+        // todos.unshift(data)
+        todos.splice(0, 1, data)
+      }
+      // 아~ 귀찮아, 그냥 새로 가져오자!
+      // queryClient.invalidateQueries({ queryKey: ['todos'] })
+    },
+    onError: (_error, _title, previousTodos) => {
+      queryClient.setQueryData(['todos'], previousTodos)
+      // const previousTodos = queryClient.getQueryData<Todo[]>(['todos'])
+      // previousTodos?.shift()
+    },
     onSettled: () => {}
   })
 }
