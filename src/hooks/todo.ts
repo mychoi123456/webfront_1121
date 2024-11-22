@@ -1,21 +1,36 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { create } from 'zustand';
 
 export interface Todo {
-  id: string // 할 일 ID
-  order: number // 할 일 순서
-  title: string // 할 일 제목
-  done: boolean // 할 일 완료 여부
-  createdAt: string // 할 일 생성일
-  updatedAt: string // 할 일 수정일
+  id: string; // 할 일 ID
+  order: number; // 할 일 순서
+  title: string; // 할 일 제목
+  done: boolean; // 할 일 완료 여부
+  createdAt: string; // 할 일 생성일
+  updatedAt: string; // 할 일 수정일
 }
+
+export type FilterStatusType = 'all' | 'todo' | 'done';
+export const useTodoFilterStore = create<{
+  filterStatus: FilterStatusType;
+  setFilterStatus: (filter: FilterStatusType) => void;
+}>(set => {
+  return {
+    filterStatus: 'all',
+    setFilterStatus: (filter: FilterStatusType) => {
+      set({ filterStatus: filter });
+    }
+  };
+});
 
 const headers = {
   'Content-Type': 'application/json',
   apikey: 'KDT8_bcAWVpD8',
   username: 'KDT8_ParkYoungWoong'
-}
+};
 
 export function useFetchTodos() {
+  const filterStatus = useTodoFilterStore(state => state.filterStatus);
   return useQuery<Todo[]>({
     queryKey: ['todos'],
     queryFn: async () => {
@@ -26,15 +41,27 @@ export function useFetchTodos() {
           headers
           // body: // xxx
         }
-      )
-      return await res.json()
+      );
+      return await res.json();
     },
-    staleTime: 1000 * 60 * 5
-  })
+    staleTime: 1000 * 60 * 5,
+    select: todos => {
+      return todos.filter(todo => {
+        switch (filterStatus) {
+          case 'all':
+            return true;
+          case 'todo':
+            return !todo.done;
+          case 'done':
+            return todo.done;
+        }
+      });
+    }
+  });
 }
 
 export function useCreateTodo() {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (title: string) => {
       const res = await fetch(
@@ -46,8 +73,8 @@ export function useCreateTodo() {
             title
           })
         }
-      )
-      return await res.json()
+      );
+      return await res.json();
     },
     onMutate: title => {
       // 낙관적 업데이트
@@ -58,33 +85,34 @@ export function useCreateTodo() {
         createdAt: '',
         updatedAt: '',
         order: 0
-      }
-      const previousTodos = queryClient.getQueryData<Todo[]>(['todos'])
+      };
+      const previousTodos = queryClient.getQueryData<Todo[]>(['todos']);
       if (previousTodos) {
-        queryClient.setQueryData(['todos'], [newTodo, ...previousTodos])
+        queryClient.setQueryData(['todos'], [newTodo, ...previousTodos]);
       }
-      return previousTodos
+      return previousTodos;
     },
     onSuccess: data => {
-      const todos = queryClient.getQueryData<Todo[]>(['todos'])
+      const todos = queryClient.getQueryData<Todo[]>(['todos']);
       if (todos) {
         // todos.shift()
         // todos.unshift(data)
-        todos.splice(0, 1, data)
+        todos.splice(0, 1, data);
       }
       // 아~ 귀찮아, 그냥 새로 가져오자!
       // queryClient.invalidateQueries({ queryKey: ['todos'] })
     },
     onError: (_error, _title, previousTodos) => {
-      queryClient.setQueryData(['todos'], previousTodos)
+      queryClient.setQueryData(['todos'], previousTodos);
       // const previousTodos = queryClient.getQueryData<Todo[]>(['todos'])
       // previousTodos?.shift()
     },
     onSettled: () => {}
-  })
+  });
 }
 
 export function useUpdateTodo() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (todo: Todo) => {
       const res = await fetch(
@@ -94,12 +122,32 @@ export function useUpdateTodo() {
           headers,
           body: JSON.stringify(todo)
         }
-      )
-      return await res.json()
+      );
+      return await res.json();
     },
     onMutate: () => {},
-    onSuccess: () => {},
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['todos'] });
+    },
     onError: () => {},
     onSettled: () => {}
-  })
+  });
+}
+
+export function useDeleteTodo() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (todo: Todo) => {
+      await fetch(
+        `https://asia-northeast3-heropy-api.cloudfunctions.net/api/todos/${todo.id}`,
+        {
+          method: 'DELETE',
+          headers
+        }
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['todos'] });
+    }
+  });
 }
